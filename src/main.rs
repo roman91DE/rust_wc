@@ -3,7 +3,7 @@ use std::io::{BufRead, BufReader, Error, ErrorKind};
 use std::path::Path;
 
 struct Metrics {
-    chars: u128,
+    bytes: u128,
     words: u128,
     lines: u128,
 }
@@ -27,7 +27,7 @@ fn open_file(path: &Path) -> Result<File, Error> {
 }
 
 fn get_metrics(f: &File) -> Result<Metrics, Error> {
-    let mut chars = 0u128;
+    let mut bytes = 0u128;
     let mut words = 0u128;
     let mut lines = 0u128;
 
@@ -37,12 +37,12 @@ fn get_metrics(f: &File) -> Result<Metrics, Error> {
         let line = line_result.expect(&format!("Error reading line {}", line_number + 1));
 
         lines += 1;
-        chars += line.len() as u128 + 1;
+        bytes += line.len() as u128;
         words += line.split_whitespace().count() as u128;
     }
 
     Ok(Metrics {
-        chars,
+        bytes,
         words,
         lines,
     })
@@ -72,7 +72,7 @@ fn main() -> Result<(), Error> {
                 println!("File: {}", arg);
                 print!(
                     "\t{:?}\t{:?}\t{:?} {}\n",
-                    metrics.lines, metrics.words, metrics.chars, arg
+                    metrics.lines, metrics.words, metrics.bytes, arg
                 );
             }
             Err(err) => {
